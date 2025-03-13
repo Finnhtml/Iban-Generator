@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IBAN-Rechner</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], select {
+            width: calc(100% - 12px);
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #iban, #bic {
+            margin-top: 10px;
+            background-color: #e9ecef;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .iban-info {
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IBAN-Rechner</h1>
+        <label for="country">Land:</label>
+        <select id="country">
+            <option value="DE">Deutschland</option>
+            <option value="AT">Österreich</option>
+            <option value="CH">Schweiz</option>
+            <option value="FR">Frankreich</option>
+            <option value="NL">Niederlande</option>
+            <option value="ES">Spanien</option>
+            <option value="IT">Italien</option>
+            <option value="BE">Belgien</option>
+            <option value="PT">Portugal</option>
+            <option value="SE">Schweden</option>
+            <option value="NO">Norwegen</option>
+            <option value="FI">Finnland</option>
+            <option value="DK">Dänemark</option>
+            <option value="PL">Polen</option>
+            <option value="CZ">Tschechien</option>
+            <option value="HU">Ungarn</option>
+            <option value="GB">Großbritannien</option>
+            <option value="IE">Irland</option>
+            <option value="GR">Griechenland</option>
+            <option value="RO">Rumänien</option>
+            <option value="BG">Bulgarien</option>
+            <option value="HR">Kroatien</option>
+            <option value="SI">Slowenien</option>
+            <option value="SK">Slowakei</option>
+            <option value="LT">Litauen</option>
+            <option value="LV">Lettland</option>
+            <option value="EE">Estland</option>
+            <option value="MT">Malta</option>
+            <option value="CY">Zypern</option>
+            <option value="LU">Luxemburg</option>
+            <option value="LI">Liechtenstein</option>
+            <option value="MC">Monaco</option>
+            <option value="SM">San Marino</option>
+            <option value="AD">Andorra</option>
+            </select>
+
+        <label for="bankleitzahl">Bankleitzahl:</label>
+        <input type="text" id="bankleitzahl">
+        <div id="bankleitzahl-error" class="error"></div>
+
+        <label for="kontonummer">Kontonummer:</label>
+        <input type="text" id="kontonummer">
+        <div id="kontonummer-error" class="error"></div>
+
+        <button onclick="berechneIBAN()">IBAN berechnen</button>
+        <label for="iban">IBAN:</label>
+        <input type="text" id="iban" readonly>
+        <label for="bic">BIC:</label>
+        <input type="text" id="bic" readonly>
+
+        <div class="iban-info">
+            <p>Die IBAN (International Bank Account Number) ist ein international standardisiertes Format für Bankkontonummern.</p>
+            <p>Sie besteht aus dem Ländercode, einer Prüfziffer, der Bankleitzahl und der Kontonummer.</p>
+            <button onclick="copyToClipboard()">IBAN kopieren</button>
+            <button onclick="generateQRCode()">QR-Code generieren</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+    <script>
+        // Bankleitzahl Datenbank (vereinfacht)
+        const bankleitzahlen = {
+            "10000000": "Deutsche Bundesbank",
+            "20000000": "Deutsche Bank",
+            // Weitere Bankleitzahlen hinzufügen
+        };
+
+        function istBankleitzahlGültig(bankleitzahl) {
+            return /^\d{8}<span class="math-inline">/\.test\(bankleitzahl\);
+\}
+function istKontonummerGültig\(kontonummer\) \{
+return /^\\d\{1,10\}</span>/.test(kontonummer);
+        }
+
+        function berechneIBAN() {
+            let country = document.getElementById("country").value;
+            let bankleitzahl = document.getElementById("bankleitzahl").value;
+            let kontonummer = document.getElementById("kontonummer").value;
+
+            // Validierung (vereinfacht)
+            if (!istBankleitzahlGültig(bankleitzahl)) {
+                document.getElementById("bankleitzahl-error").textContent = "Ungültige Bankleitzahl (8 Ziffern)";
+                return;
+            } else {
+                document.getElementById("bankleitzahl-error").textContent = "";
+            }
+
+            if (!istKontonummerGültig(kontonummer)) {
+                document.getElementById("kontonummer-error").textContent = "Ungültige Kontonummer (max. 10 Ziffern)";
+                return;
+            } else {
+                document.getElementById("kontonummer-error").textContent = "";
+            }
+
+            kontonummer = kontonummer.padStart(10, '0');
+
+            // IBAN Berechnung (vereinfacht)
+            let iban = berechneIBANFürLand(country, bankleitzahl, kontonummer);
+            document.getElementById("iban").value = iban;
+
+            // BIC Berechnung (vereinfacht)
+            let bic = berechneBIC(bankleitzahl);
+            document.getElementById("bic").value = bic;
+        }
+
+        function berechneIBANFürLand(country, bankleitzahl, kontonummer) {
+            // Hier sollte die IBAN-Berechnung für jedes Land implementiert werden
+            // Da die Berechnung komplex ist, wird hier eine vereinfachte Version verwendet
+            // Die korrekte Berechnung ist abhängig vom Land und der Bankleitzahl
+            // Hier wird ein Beispiel für Deutschland verwendet
+            if (country === "DE") {
+                let laenderCodeZahl = 131400; // DE00 als Zahl
+                let zahl = bankleitzahl + kontonummer + laenderCodeZahl;
+                let pruefziffer = 98 - (zahl % 97);
+                pruefziffer = pruefziffer.toString().padStart(2, '0');
+                return country + pruefziffer + bankleitzahl + kontonummer;
+            } else {
+                return "IBAN nicht berechenbar";
+            }
+        }
+
+        function berechneBIC(bankleitzahl) {
